@@ -1,0 +1,171 @@
+<template>
+    <div class="app">
+        <el-container direction="vertical">
+            <global-header />
+            <el-main class="main-container">
+                    <add-car 
+                        @add="freshDataList"
+                        :visible="visible"
+                        @change="change"
+                    />
+                    <main-map 
+                        :carList="carList"
+                        class="map"
+                        :activeCar="activeCar"
+                        @close="activeCar = null"
+                    />
+                    <car-list 
+                        :carList="carList"
+                        @active="handleMouseEvent"
+                        @delete="freshDataList"
+                    />
+            </el-main>
+            <global-footer />
+        </el-container>
+    </div>
+</template>
+
+<script>
+import GlobalHeader from "~/components/global/Header";
+import AddCar from "~/components/main/addcar/Index";
+import CarList from "~/components/main/carlist/Index";
+import GlobalFooter from "~/components/global/Footer";
+import MainMap from "~/components/main/map/Index";
+import { $API } from "~/plugins/API/index";
+import moment from "moment";
+
+/* 
+    10:创建
+    20:已激活
+    25:即将到达 
+    30:已结束 
+    0:异常,
+    1: 创建中
+    31: 过期
+*/
+const ORDER_STATUS = {
+    10: "#c2c2c2",
+    20: "#45d898",
+    25: "#eb9941",
+    0: "#F56C6C",
+    1: "#c2c2c2"
+};
+
+const handleStatusColor = (code) => {
+    return ORDER_STATUS[code];
+};
+
+const filterCarList = (list) => {
+    let arr = list.reduce((a, b) => {
+        if (b.status === 30) {
+            return a;
+        }
+        a.push({
+            ...b,
+            active: false,
+            statusColor: handleStatusColor(b.status)
+        });
+        return a;
+    }, []);
+
+    return arr.sort((a, b) => {
+        return a.status - b.status > 0 ? 1 : 0;
+    });
+};
+
+export default {
+    components: {
+        GlobalHeader,
+        AddCar,
+        CarList,
+        GlobalFooter,
+        MainMap
+    },
+    data() {
+        return {
+            carList: [],
+            timeOut: null,
+            activeCar: null,
+            visible: false
+        };
+    },
+    // asyncData({ store, redirect }) {
+    //     return $API
+    //         .getShipping(store.state.sessionId)
+    //         .then((res) => {
+    //             if (res && res.data.status) {
+    //                 let carList = filterCarList(res.data.data);
+    //                 return { carList };
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             if (!err.response || err.response.status === 401) {
+    //                 redirect("/login");
+    //             }
+    //         });
+    // },
+    created() {
+        this.freshDataList();
+        setTimeout(() => {
+            if (this.carList.length > 0) {
+                this.visible = false;
+            } else {
+                this.visible = true;
+            }
+        }, 300);
+        this.timeOut = setInterval(() => {
+            this.freshDataList();
+        }, 10000);
+    },
+    beforeDestroy() {
+        clearInterval(this.timeOut);
+    },
+    methods: {
+        handleMouseEvent(car) {
+            this.activeCar = car;
+        },
+        freshDataList() {
+            let vm = this;
+            vm.$Api
+                .getShipping()
+                .then((response) => {
+                    if (response.data.status) {
+                        vm.carList = filterCarList(response.data.data);
+                        vm.stillActive();
+                    }
+                })
+                .catch((error) => {});
+        },
+        change() {
+            this.visible = !this.visible;
+        },
+        stillActive() {
+            let vm = this;
+            if (!vm.activeCar) return;
+            if (vm.carList.findIndex((a) => a.id === vm.activeCar) === -1)
+                vm.activeCar = null;
+        }
+    }
+};
+</script>
+<style scoped>
+.app {
+    height: 100%;
+}
+.app .el-container {
+    height: 100%;
+}
+.app >>> .el-main {
+    padding: 0;
+}
+.main {
+    min-height: 800px;
+}
+.main-container {
+    display: flex;
+}
+.main-container .map {
+    width: 100%;
+}
+</style>
+

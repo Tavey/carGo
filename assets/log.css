@@ -1,0 +1,48 @@
+.titileHello{
+    text-align: center;
+    font-size: 20px;
+    /* line-height: 99px; */margin-bottom: 45px;
+    margin-top: 13px;
+}
+.page {
+    height: 100%;
+    width: 100%;
+    background: url('./bg.png')  52% 25% no-repeat;
+}
+.checked {
+    line-height: 77px;
+}
+#submit {
+    width: 290px;
+    height: 500px;
+    position: absolute;
+    top:40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.toOther{
+    text-align: center
+}
+.where{
+    height: 50px;
+    width: 205px;
+    margin-top: 60px
+}
+a:link {color:#409EFF;}/* 未被访问的链接 */
+
+a:visited {color:#409EFF;}/* 已被访问的链接 */
+
+a:hover {color:#409EFF;}/* 鼠标指针移动到链接上 */
+
+a:active {color:#409EFF;}/* 正在被点击的链接 */
+
+a{
+    text-decoration: none;
+}
+.mar5{
+    margin-left: 14px;
+}
+.mar5>>>.is-disabled{
+    background: #dcdde0;
+    border: 1px solid #dcdde0;
+}

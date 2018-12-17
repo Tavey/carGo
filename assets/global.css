@@ -1,0 +1,27 @@
+.el-message-box__title {
+    font-size: 14px;
+}
+.el-message-box__content {
+    font-size: 12px;
+}
+.el-tooltip__popper.is-light {
+    border: none;
+}
+body,
+html {
+    height: 100%;
+    width: 100%;
+}
+#__nuxt {
+    height: 100%;
+}
+#__layout,
+#__layout > div {
+    height: 100%;
+}
+input::-input-placeolder {
+    color: #666;
+}
+.v-modal{
+    display: none;
+}
